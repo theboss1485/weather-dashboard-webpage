@@ -1,0 +1,122 @@
+.border{
+    border: 2px solid black;
+}
+
+.card-width{
+    width: 20%;
+}
+
+.dark-red-color {
+    background-color: darkred;
+    color: white;
+}
+
+.main-title{
+    background: linear-gradient(to right, rgb(27, 27, 255), purple);
+    color: white;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    text-align: center;
+    width: 98%;
+}
+
+
+
+
+@media screen and (min-width: 1500px) {
+
+
+    form{
+        width: 100%;
+        margin: auto;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    
+    #main-container{
+        flex-direction: column;
+    }
+
+    form{
+        width: 50%;
+        margin: auto;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    
+    #display-five-day-forecast{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    label{
+        text-align: center;
+    }
+
+    
+    
+    #main-container{
+        flex-direction: column;
+    }
+
+    .card-width{
+        width: 40%;
+    }
+
+    .five-day-title{
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 450px){
+
+    form{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 350px){
+    .card-width{
+        width: 70%;
+    }
+}
+
+
+@media screen and (max-width: 325px) {
+    
+    h1 {
+        
+        font-size: 10vw;
+        padding-left: 0.2em;
+        padding-right: 0.2em;
+    }
+
+}
+
+@media screen and (max-width: 315px){
+   
+    button {
+        font-size: 7vw;
+    }
+
+    h2{
+        font-size: 10vw;
+    }
+    
+    p {
+        font-size: 7vw;
+    }
+}
+
+@media screen and (max-width: 250px){
+    .btn{
+        font-size: 6vw;
+    }
+
+    label {
+        font-size: 7vw;
+    }
+}
