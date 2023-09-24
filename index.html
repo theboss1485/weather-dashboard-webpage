@@ -15,37 +15,48 @@
         <link rel="stylesheet" href="assets/css/style.css" />
         <title>Weather Dashboard</title>
         <script src="assets/javascript/countries-and-states.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js" defer> </script>
         <script src="assets/javascript/script.js" defer></script>
     </head>
     <body>
         <h1 class="main-title">Weather Dashboard</h1>
-        <section id="main-container" class="width-75 d-flex justify-content-evenly">
-            <section>
+        <section id="main-container" class="d-flex justify-content-evenly">
+            
                 <form>
-                    <section class="mx-2 d-flex flex-column justify-content-center"> 
+                    <section class="mx-2 d-flex flex-column width-100 justify-content-evenly"> 
                         <label for="countries-box"><strong>Select a Country:</strong></label>
-                        <select name="countries-box" id="countries"></select>
-                        <label for="states-box"><strong>Select a State:</strong></label>
-                        <select name="states-box" id="states"></select>
+                        <select name="countries-box" id="countries-box"></select>
+                        <label for="states-box"><strong>Select a State (U.S.):</strong></label>
+                        <select name="states-box" id="states-box"></select>
                         <label for="city-search-box"><strong>Search for a City:</strong></label>
                         <input id="city-search-box" type="text">
                     </section>
-                    <section id="button-container" class="d-flex flex-column justify-content-center">
-                        <button id="search-button" class="btn btn-primary mx-4 my-2">Search</button>
-                        <button id="clear-search-history" class="btn btn-primary mx-4 my-2">Clear Search History</button>
-                        <input id="search-button" class="btn btn-primary mx-4 my-2" type="submit">
-                    </section>
-                    <section>
+
+                    <section id="button-container" class="d-flex flex-column justify-content-evenly">
+
                         
+                        <button id="search-button" class="btn btn-primary mx-4 my-2">Search</button>
+                    </section>
+                        
+                    <section id="search-results" class="d-flex flex-column">
+                        <p id="search-results-heading" class="text-center"><strong>Search Results:</strong></p>
+                        <p id="error-heading" class="text-center red"><strong></strong></p>
+                    </section>
+                        
+                    <section class="d-flex flex-column justify-content-evenly">
+                        <button id="clear-search-history" class="btn btn-primary mx-4 my-2">Clear Search History</button>
                     </section>
                 </form>
                 <section id="search-history">
                     
                 </section>
-            </section>
-            <section class="col-12 col-lg-9">
+        
+            <section class="col-sm-12 col-md-11 col-lg-9 col-xl-8 col-xxl-7">
                 <section id="display-weather-and-search-results" class="col-12 border">
-                    <h2>City Name ☀️</h2>
+                    <section class="d-flex align-items-center">
+                        <h2 id="main-city-name">City Name</h2>
+                        <img id="main-weather-icon" src="">
+                    </section>
                     <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
                     <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
                     <p id="humidity-main" class="mx-2">Humidity: 63%</p>
@@ -55,39 +66,39 @@
                 <section id="display-five-day-forecast" class="col-12 d-flex">
                     
                     <section class="card card-width mx-2 my-2 dark-red-color">
-                        <p id="day-1" class="mx-2">9/14/2022</p>
-                        <p id="weather-emoji-day-1" class="mx-2">☀️</p>
-                        <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
-                        <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
-                        <p id="humidity-main" class="mx-2">Humidity: 63%</p>
+                        <p id="date-day-1" class="mx-2">9/14/2022</p>
+                        <img id="weather-icon-day-1" class="mx-2">
+                        <p id="temp-day-1" class="mx-2">Temp: 75.22°F</p>
+                        <p id="wind-day-1" class="mx-2">Wind: 4.02 MPH</p>
+                        <p id="humidity-day-1" class="mx-2">Humidity: 63%</p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
-                        <p id="day-2" class="mx-2">9/14/2022</p>
-                        <p id="weather-emoji-day-2" class="mx-2">☀️</p>
-                        <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
-                        <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
-                        <p id="humidity-main" class="mx-2">Humidity: 63%</p>
+                        <p id="date-day-2" class="mx-2">9/14/2022</p>
+                        <img id="weather-icon-day-2" class="mx-2">
+                        <p id="temp-day-2" class="mx-2">Temp: 75.22°F</p>
+                        <p id="wind-day-2" class="mx-2">Wind: 4.02 MPH</p>
+                        <p id="humidity-day-2" class="mx-2">Humidity: 63%</p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
-                        <p id="day-3" class="mx-2">9/14/2022</p>
-                        <p id="weather-emoji-day-3" class="mx-2">☀️</p>
-                        <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
-                        <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
-                        <p id="humidity-main" class="mx-2">Humidity: 63%</p>
+                        <p id="date-day-3" class="mx-2">9/14/2022</p>
+                        <img id="weather-icon-day-3" class="mx-2">
+                        <p id="temp-day-3" class="mx-2">Temp: 75.22°F</p>
+                        <p id="wind-day-3" class="mx-2">Wind: 4.02 MPH</p>
+                        <p id="humidity-day-3" class="mx-2">Humidity: 63%</p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
-                        <p id="day-4" class="mx-2">9/14/2022</p>
-                        <p id="weather-emoji-day-4" class="mx-2">☀️</p>
-                        <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
-                        <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
-                        <p id="humidity-main" class="mx-2">Humidity: 63%</p>
+                        <p id="date-day-4" class="mx-2">9/14/2022</p>
+                        <img id="weather-icon-day-4" class="mx-2">
+                        <p id="temp-day-4" class="mx-2">Temp: 75.22°F</p>
+                        <p id="wind-day-4" class="mx-2">Wind: 4.02 MPH</p>
+                        <p id="humidity-day-4" class="mx-2">Humidity: 63%</p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
-                        <p id="day-5" class="mx-2">9/14/2022</p>
-                        <p id="weather-emoji-day-5" class="mx-2">☀️</p>
-                        <p id="temp-main" class="mx-2">Temp: 75.22°F</p>
-                        <p id="wind-main" class="mx-2">Wind: 4.02 MPH</p>
-                        <p id="humidity-main" class="mx-2">Humidity: 63%</p>
+                        <p id="date-day-5" class="mx-2">9/14/2022</p>
+                        <img id="weather-icon-day-5" class="mx-2">
+                        <p id="temp-day-5" class="mx-2">Temp: 75.22°F</p>
+                        <p id="wind-day-5" class="mx-2">Wind: 4.02 MPH</p>
+                        <p id="humidity-day-5" class="mx-2">Humidity: 63%</p>
                     </section>
     
                 </section>

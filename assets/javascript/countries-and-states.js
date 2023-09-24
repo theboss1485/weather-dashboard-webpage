@@ -1,7 +1,8 @@
-/* I took this list of countries and country codes from https://gist.github.com/incredimike/1469814. 
-I removed information from that I didn't need from this list.*/ 
+// I took this list of countries and country codes from https://gist.github.com/incredimike/1469814. 
+//I removed information from that I didn't need from this list.*
 
 const countryListAllIsoData = [
+    {code: "", name: "Please Select"},
 	{code: "AF", name: "Afghanistan"},
 	{code: "AL", name: "Albania"},
 	{code: "DZ", name: "Algeria"},
@@ -254,6 +255,7 @@ const countryListAllIsoData = [
 
 // I took this list of states and abbreviations from https://gist.github.com/marshallswain/88f377c71aa88aceaf660b157f6d8f46
 var usStates = [
+    { name: 'Please Select', abbreviation: ''},
     { name: 'Alabama', abbreviation: 'AL'},
     { name: 'Alaska', abbreviation: 'AK'},
     { name: 'Arizona', abbreviation: 'AZ'},
