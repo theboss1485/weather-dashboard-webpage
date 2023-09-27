@@ -16,6 +16,8 @@
         <title>Weather Dashboard</title>
         <script src="assets/javascript/countries-and-states.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js" defer> </script>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/plugin/timezone.js" defer></script>
         <script src="assets/javascript/script.js" defer></script>
     </head>
     <body>
@@ -43,11 +45,12 @@
                         <p id="error-heading" class="text-center red"><strong></strong></p>
                     </section>
                         
-                    <section class="d-flex flex-column justify-content-evenly">
-                        <button id="clear-search-history" class="btn btn-primary mx-4 my-2">Clear Search History</button>
+                    <section id="search-history" class="d-flex flex-column justify-content-evenly">
+                        <p id="search-history-heading" class="text-center d-none"><strong>Search History:</strong></p>
+                        <button id="clear-search-history" class="btn btn-primary mx-4 my-2 d-none">Clear Search History</button>
                     </section>
                 </form>
-                <section id="search-history">
+                <section>
                     
                 </section>
         
