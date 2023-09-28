@@ -16,35 +16,34 @@
         <title>Weather Dashboard</title>
         <script src="assets/javascript/countries-and-states.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js" defer> </script>
-        <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/plugin/timezone.js" defer></script>
         <script src="assets/javascript/script.js" defer></script>
     </head>
     <body>
         <h1 class="main-title">Weather Dashboard</h1>
         <section id="main-container" class="d-flex justify-content-evenly">
             
+            <!-- For large screen sizes, I made the form for enetering the search terms, as well as the search results and search history, into a column that
+            sits on the left of the page.-->
                 <form>
                     <section class="mx-2 d-flex flex-column width-100 justify-content-evenly"> 
                         <label for="countries-box"><strong>Select a Country:</strong></label>
-                        <select name="countries-box" id="countries-box"></select>
-                        <label for="states-box"><strong>Select a State (U.S.):</strong></label>
+                        <select name="countries-box" id="countries-box" ></select>
+                        <label for="states-box" class="mt-1"><strong>Select a State (U.S.):</strong></label>
                         <select name="states-box" id="states-box"></select>
-                        <label for="city-search-box"><strong>Search for a City:</strong></label>
+                        <label for="city-search-box" class="mt-1"><strong>Search for a City:</strong></label>
                         <input id="city-search-box" type="text">
                     </section>
-
                     <section id="button-container" class="d-flex flex-column justify-content-evenly">
-
-                        
                         <button id="search-button" class="btn btn-primary mx-4 my-2">Search</button>
                     </section>
                         
+                    <!-- The application adds search results to the search-results section after it returns and validates them. -->
                     <section id="search-results" class="d-flex flex-column">
                         <p id="search-results-heading" class="text-center fw-bold mt-4 mb-1"></p>
                         <p id="error-heading" class="text-center red"><strong></strong></p>
                     </section>
                         
+                    <!-- Similarly, the application adds a queried city to the search-history section after the user clicks on it. -->
                     <section id="search-history" class="d-flex flex-column justify-content-evenly mt-4">
                         <p id="search-history-heading" class="text-center d-none "><strong>Search History:</strong></p>
                         <button id="clear-search-history" class="btn btn-primary mx-4 my-2 d-none">Clear Search History</button>
@@ -58,6 +57,8 @@
                 <section id="display-weather-and-search-results" class="col-12 border">
                     <section class="d-block align-items-center">
                         <h2 id="main-city-name" class="mx-2">City: </h2>
+
+                        <!-- I decided to put the main weather icon on its own line to keep things simpler with responsive design. -->
                         <img id="main-weather-icon" src="">
                     </section>
 
@@ -71,6 +72,8 @@
                 </section>
 
                 <h2 class="five-day-title mt-2">5-Day-Forecast</h2>
+
+                <!-- This section displays the five-day weather forecast to the user. -->
                 <section id="display-five-day-forecast" class="col-12 d-flex">
                     
                     <section class="card card-width mx-2 my-2 dark-red-color">

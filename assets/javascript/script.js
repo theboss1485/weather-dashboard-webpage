@@ -12,7 +12,6 @@ var printedCityNamesMK2 = [];
 stateSelectBox.disabled = true;
 citySearchBox.disabled = true;
 
-//var truncatedWeatherData = [];
 var countryAndState = "";
 
 
@@ -31,6 +30,7 @@ var parsedData = null;
 searchButton.addEventListener('click', determineGeographicCoordinatesAndCityNames);
 clearSearchHistoryButton.addEventListener('click', clearSearchHistory);
 
+// This function populates the counter for the number of search histories that are in local storage.
 function populateLocalStorageItemCounter(){
 
     var counter = localStorage.getItem("local-storage-item-counter") 
@@ -45,8 +45,11 @@ function populateLocalStorageItemCounter(){
     }
 }
 
+// This function populates the countries dropdown box.
 function populateCountries(){
+
     var counter = 0;
+
     for(entry in countryListAllIsoData){
         var listItem = document.createElement("option");
         listItem.text = countryListAllIsoData[counter].name;
@@ -56,6 +59,7 @@ function populateCountries(){
     }
 }
 
+// This function populates the U.S. states dropdown box.
 function populateStates(){
 
     var counter = 0;
@@ -73,9 +77,11 @@ function populateStates(){
 populateCountries();
 populateStates();
 
-// countrySelectBox.addEventListener("focus", populateCountries);
-// stateSelectBox.addEventListener("focus", populateStates);
 
+/* This function  calls the Open Weather Map geolocating API to determine city coordinates.  For each pair of coordinates that is returned,
+the function plugs the coordinates back into the Open Weather Map API.  Each time the user submits a query, the first result of this second operation is always kept. 
+However, for any subsequent reuslts, if the city names returned by the geolocating API and the weather API differ and one doesn't contain the other, the result will be discarded.  If the names
+match or one contains the other for any subsequent results, those results will be kept.*/
 async function determineGeographicCoordinatesAndCityNames(event){
 
     var foreignStateName = ""
@@ -116,7 +122,6 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
     document.getElementById("search-results-heading").textContent = "Searching..."
     
-
     fetch(aPIString).then(function (response){
         
         return checkforErrors(response)
@@ -124,11 +129,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
     }).then( async function(data){
 
         var foreignCityNameWithState  = false;
-        
-        //parsedData = JSON.parse(data);
 
-        
-        
         var printedCityNames = [];
         
 
@@ -146,12 +147,8 @@ async function determineGeographicCoordinatesAndCityNames(event){
             errorHeading.textContent = "No Results Found!";
         }
 
-        
-
-        /* This loop removes elements whose names don't contain the original city search box value.
-        I implemented this because while searching for 'London', UK, I was receiving districts/parts of London,
-        such as Vauxhall.*/
-
+        /* If the country is foreign and a state is returned by the geolocating API, the name of the state will be stored.
+        This is for the purposes of differentiating cities from each other if there are two cities in the same country with the same name. */
         for (var counter = 0; counter < data.length; counter++){
 
             if((data[counter].state !== undefined)  && (countrySelectBox.value !== "US")){
@@ -177,11 +174,11 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
                 return checkforErrors(response);
 
-            /*Once again, to limit the number of edge cases and odd scenarios, I decided to  call the weather data API for each location that the geolocating API returned.  
+            /*To try to limit the number of edge cases and odd scenarios, I decided to  call the weather data API for each location that the geolocating API returned.  
             If the city name given by the geolocating API doesn't contain or match the name given by the weather data API or vice versa, the result will be discarded 
             from the list of search results, unless the result is the first one returned from an API call.  To give an example, I was searching the geolocating API for
-                Vauxhall, United Kingdom, but when typing the provided coordinates back into the weather data API, I would receive city names of places such as Liverpool or Lambeth.  
-                The reason for this seems to be that Vauxhall is a smaller region within Liverpool and Lambeth.*/
+            Vauxhall, United Kingdom, but when typing the provided coordinates back into the weather data API, I would receive city names of places such as Liverpool or Lambeth.  
+            The reason for this seems to be that Vauxhall is a smaller region within Liverpool and Lambeth.*/
             }).then(function(weatherData){
 
                 if ((cityName.includes(weatherData.name) || weatherData.name.includes(cityName)) || counter === 0){
@@ -205,8 +202,6 @@ async function determineGeographicCoordinatesAndCityNames(event){
                     }
 
                     printedCityNames.push(printedCityName);
-
-                    //truncatedWeatherData.push({identifer: "result-" + counter, name: printedCityName, icon: weatherData.weather[0].icon, temp: weatherData.main.temp, humidity: weatherData.main.humidity, windSpeed : weatherData.wind.speed});
                 
                     var searchResult = document.createElement("button");
                     searchResult.id = "search-history-" + counter;
@@ -240,7 +235,6 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
                         if(searchResultButtons[counter2].textContent === searchResultButtons[counter2 - 1].textContent  && foreignCityNameWithState === true){
 
-
                             searchResultButtons[counter2].textContent = printedCityNamesMK2[counter2];
                             searchResultButtons[counter2].setAttribute("data-cityname", printedCityNamesMK2[counter2]);
                             searchResultButtons[counter2 - 1].textContent = printedCityNamesMK2[counter2 - 1];
@@ -248,10 +242,9 @@ async function determineGeographicCoordinatesAndCityNames(event){
                         }
                     }
 
-                } else{
+                } else {
 
                     printedCityNames.push(0);
-                    //truncatedWeatherData.push(0);
                 } 
             });
         }
@@ -269,6 +262,8 @@ async function determineGeographicCoordinatesAndCityNames(event){
     });
 }
 
+/* This function checks other input fields when the country select box's value changes, and changes them
+and disables them appropriately.*/
 function checkCountrySelectBox(){
 
     if(countrySelectBox.value !== ""){
@@ -279,7 +274,6 @@ function checkCountrySelectBox(){
             citySearchBox.disabled = true;
             citySearchBox.value = "";
             searchButton.disabled = true;
-        
 
         } else if (countrySelectBox.value !== "US"){
 
@@ -300,6 +294,8 @@ function checkCountrySelectBox(){
     }
 }
 
+/* * This function checks other input fields when the state select box's value changes, and changes them
+and disables them appropriately.*/
 function checkStateSelectBox(){
 
     if(stateSelectBox.value !== ""){
@@ -314,10 +310,11 @@ function checkStateSelectBox(){
     }
 }
 
+// This function disables the search button appropriately if the city search box's value changes to an empty string.
 function checkCitySearchBox(event){
 
-    /* The reason for the 1 millisecond delay here is to give the city textbox time to populate
-    , so that the event wouldn't fire, and then then the system would see that the textbox had no characters 
+    /* The reason for the 1 millisecond delay here is to give the city textbox time to populate, 
+    so that the event wouldn't fire, and then then the system would see that the textbox had no characters 
     in it, fail to enable the Submit button, and then put the character in the textbox.  */
     setTimeout(function() {
 
@@ -333,6 +330,7 @@ function checkCitySearchBox(event){
     }, 1)
 }
 
+// This function displays the current weather data for the city that the user clicks in the search results. 
 function displayCurrentWeather(event){
 
     event.preventDefault();
@@ -356,6 +354,7 @@ function displayCurrentWeather(event){
    
 }
 
+/* This function calls the Open Weather Map forecast API and displays the data in the five red cards on the page. */
 async function obtainAndDisplayWeatherForecast(event){
 
     var aPIString = "https://api.openweathermap.org/data/2.5/forecast?lat=" + event.target.dataset.latitude  + "&lon=" + event.target.dataset.longitude + "&appid=1b2bd4f01472b8f5040a1556773b2978&units=imperial";
@@ -368,19 +367,8 @@ async function obtainAndDisplayWeatherForecast(event){
 
         console.log(forecast)
 
-        /* In order to display the forecast correctly, we must get the offset in hours from the UTC for both 
-        the target location and the timezone of the user's local machine.  We then add together the local time in hours and
-        the negative of the local time UTC offset, to convert the local time to UTC time.*/
-
-        //var localTimeUTCHourOffset = dayjs().utcOffset() / 60
-
         var today = dayjs()
 
-
-        /* Next, we take the current time and divide it by three, and round it to the nearest whole number.  This tells us
-        what the correct hour offset is for pulling the weather forecast information from the array of forecast data, since the forecast data is in UTC time,
-        according to https://openweathermap.org/forecast5.  The weather forecast information is provided in increments of three hours.*/
-        
         for(var counter = 1; counter <= 5; counter++){
 
             var dayWeatherIcon = document.getElementById("weather-icon-day-" + (counter))
@@ -391,10 +379,9 @@ async function obtainAndDisplayWeatherForecast(event){
             date.textContent = today.add(counter + 1, 'day').format('MM/DD/YYYY');
             date.classList.add("my-0");
 
-            /* When pulling the data from the forecast array, we then use the counter times 8 as the number of days, and add the 
-            hour offset to then calculate which of the eight pieces of forecast data we should be displaying for each day.  The intent is 
-            to display the piece of forecast data that is closest to the current UTC time, which will then be the data that is closest tot the
-            target location's current time, for each day.*/
+            /* When pulling the data from the forecast array, I used the counter as the number of days, and then multiplied it by eight 
+            to calculate which of the 40 pieces of forecast data the page should be displaying.  The intent is to display the piece of
+             forecast data that is closest to the current time, for each of the future five days.*/
             dayWeatherIcon.src = "https://openweathermap.org/img/wn/" + forecast.list[(counter * 8 - 1)].weather[0].icon + "@2x.png";
             dayWeatherIcon.classList.add("d-inline");
             document.getElementById("temp-day-" + (counter)).textContent = "Temperature: " + forecast.list[(counter * 8) - 1].main.temp + " °F";
@@ -405,6 +392,7 @@ async function obtainAndDisplayWeatherForecast(event){
     });
 }
 
+// This function adds each search result that the user clicks to the system's local storage.
 function addQueriedCityToSearchHistory(event){
 
     var buttonData = []
@@ -466,6 +454,7 @@ function addQueriedCityToSearchHistory(event){
     displaySearchResultsHeadingAndClearButton();
 }
 
+// This function gets the search history from the system's local storage and displays it on the page.
 function displaySearchHistory(){
 
     var buttonKeys = Object.keys(localStorage).filter(key => key.startsWith("search-history-")).sort();
@@ -507,7 +496,7 @@ function displaySearchHistory(){
     }
 }
 
-
+// This function removes the search history buttons (except for the Clear Search History button) from the page when the user clicks the Clear Search History button.
 function clearSearchHistoryButtons(){
 
     var currentSearchHistoryButtons = document.getElementById("search-history").getElementsByClassName("btn-secondary");
@@ -520,6 +509,8 @@ function clearSearchHistoryButtons(){
     }
 }
 
+/* This function removes the search history from the system's local storage when the user clicks the Clear Search History button.
+It also hides the Clear Search History button and Search History heading.*/
 function clearSearchHistory(event){
 
     event.preventDefault();
@@ -544,6 +535,7 @@ function clearSearchHistory(event){
 
 }
 
+/* This function displays the Search Results heading and Clear Search History button when appropriate. */
 function displaySearchResultsHeadingAndClearButton(){
 
     for(var counter = 0; counter < localStorage.length; counter++){
@@ -560,6 +552,7 @@ function displaySearchResultsHeadingAndClearButton(){
     }
 }
 
+// This function returns an error message to the user if a fetch call returns an error.
 function checkforErrors(response){
 
     if(response.status !== 200){

@@ -22,6 +22,7 @@ img{
     color: white;
 }
 
+/* This class sets the styling of the main 'Weather Dashboard' title.  */
 .main-title{
     background: linear-gradient(to right, rgb(27, 27, 255), purple);
     color: white;
@@ -55,12 +56,6 @@ img{
 #error-heading{
     font-weight: bolder;
 }
-
-
-@media screen and (min-width: 1500px) {
-
-}
-
 
 @media screen and (max-width: 991px) {
     
@@ -113,7 +108,7 @@ img{
     }
 }
 
-
+/* The media queries below change the font size of some elements on the page when the width of the screen is small. */
 @media screen and (max-width: 325px) {
     
     h1 {
