@@ -225,7 +225,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
                     searchResult.setAttribute("data-longitude", roundedLongitude);
                     searchResult.setAttribute("data-timezone", weatherData.timezone);
                     searchResult.addEventListener("click", displayCurrentWeather);
-                    searchResult.addEventListener("click", obtainAndDisplayWeatherForcast);
+                    searchResult.addEventListener("click", obtainAndDisplayWeatherForecast);
                     searchResult.addEventListener("click", addQueriedCityToSearchHistory);
                     
                     var searchResults = document.getElementById("search-results");
@@ -356,7 +356,7 @@ function displayCurrentWeather(event){
    
 }
 
-async function obtainAndDisplayWeatherForcast(event){
+async function obtainAndDisplayWeatherForecast(event){
 
     var aPIString = "https://api.openweathermap.org/data/2.5/forecast?lat=" + event.target.dataset.latitude  + "&lon=" + event.target.dataset.longitude + "&appid=1b2bd4f01472b8f5040a1556773b2978&units=imperial";
 
@@ -502,7 +502,7 @@ function displaySearchHistory(){
 
         document.getElementById("clear-search-history").insertAdjacentElement('beforeBegin', newButton);
         newButton.addEventListener("click", displayCurrentWeather);
-        newButton.addEventListener("click", obtainAndDisplayWeatherForcast);
+        newButton.addEventListener("click", obtainAndDisplayWeatherForecast);
         newButton.addEventListener("click", addQueriedCityToSearchHistory);
     }
 }
