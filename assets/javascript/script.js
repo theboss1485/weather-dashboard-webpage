@@ -7,10 +7,12 @@ var clearSearchHistoryButton = document.getElementById("clear-search-history")
 
 var localStorageItemCounter = null
 
+var printedCityNamesMK2 = [];
+
 stateSelectBox.disabled = true;
 citySearchBox.disabled = true;
 
-var weatherData = [];
+//var truncatedWeatherData = [];
 var countryAndState = "";
 
 
@@ -76,6 +78,10 @@ populateStates();
 
 async function determineGeographicCoordinatesAndCityNames(event){
 
+    var foreignStateName = ""
+
+    var numberOfSearchResultsOnPage = 0;
+
     errorHeading.textContent = "";
 
     event.preventDefault();
@@ -91,33 +97,38 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
     event.preventDefault();
 
+    var citySearchBoxValue = citySearchBox.value;
+
+    // I implemented the replace method by using https://www.tutorialspoint.com/How-to-replace-all-occurrences-of-a-string-in-JavaScript#:~:text=To%20replace%20all%20occurrences%20of%20a%20string%20in%20JavaScript%20there,of%20the%20strings%20in%20JavaScript.
+    var doctoredSearchBoxValue= citySearchBoxValue.replace(new RegExp("'", 'g'), '%27');
+
+    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp(" ", 'g'), '+');
+
     // The Xpert Learning AI Assistant told me how to get the value out of a dropdown box option.
     if(countrySelectBox.value === "US"){
 
-        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + citySearchBox.value +',' + stateSelectBox.value + ',US' + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
+        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue +',' + stateSelectBox.value + ',US' + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
 
     } else {
 
-        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + citySearchBox.value + ',' + countrySelectBox.value + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
+        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue + ',' + countrySelectBox.value + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
     }
+
+    document.getElementById("search-results-heading").textContent = "Searching..."
     
 
     fetch(aPIString).then(function (response){
-
-        // This check prints any errors received when going to fetch data from the Weather Map API.
-        if(response.status !== 200){
-
-            errorHeading.textContent = response.status + " error returned!!";
         
-        } else {
-
-            errorHeading.textContent = "";
-            return response.json()
-        }
+        return checkforErrors(response)
         
     }).then( async function(data){
+
+        var foreignCityNameWithState  = false;
         
         //parsedData = JSON.parse(data);
+
+        
+        
         var printedCityNames = [];
         
 
@@ -127,16 +138,12 @@ async function determineGeographicCoordinatesAndCityNames(event){
         
         } else {
 
-            countryAndState = countrySelectBox.options[countrySelectBox.selectedIndex].text + ", " + stateSelectBox.options[stateSelectBox.selectedIndex].text;
+            countryAndState = stateSelectBox.options[stateSelectBox.selectedIndex].text + ", " + countrySelectBox.options[countrySelectBox.selectedIndex].text;
         }
 
         if(data.length === 0){
 
             errorHeading.textContent = "No Results Found!";
-        
-        } else {
-
-            
         }
 
         
@@ -147,104 +154,118 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
         for (var counter = 0; counter < data.length; counter++){
 
+            if((data[counter].state !== undefined)  && (countrySelectBox.value !== "US")){
+
+                foreignStateName = data[counter].state;
+                foreignCityNameWithState = true;
+            
+            } else {
+
+                foreignCityNameWithState = false;
+            }
+
             var cityName = data[counter].name;
 
-            // if(cityName.includes(citySearchBox.value) === true && cityName !== citySearchBox.value){
+            /*To keep things, simple I rounded the latitude and longitude to four decimal places.  I was running into an issue where the system would round the coordinates
+            to four decimal places.  The system rounds the coordiantes to four decimal places in the output data.  I thought this would reduce issues with outputs not being uniform. */
+            roundedLatitude = data[counter].lat.toFixed(4);
+            roundedLongitude = data[counter].lon.toFixed(4);
+            var aPIString = "https://api.openweathermap.org/data/2.5/weather?lat=" +  roundedLatitude + "&lon=" + roundedLongitude + "&appid=1b2bd4f01472b8f5040a1556773b2978&units=imperial";
+            console.log(aPIString);
 
-            //     printedCityNames.push(data[counter].name + ", " + countryAndState);
-            
-            // } else if(cityName.includes(citySearchBox.value) === false) {
+            await fetch(aPIString).then(function (response){
 
-            //     var localNames = data[counter].local_names;
+                return checkforErrors(response);
 
-            //     var values = Object.values(localNames)
+            /*Once again, to limit the number of edge cases and odd scenarios, I decided to  call the weather data API for each location that the geolocating API returned.  
+            If the city name given by the geolocating API doesn't contain or match the name given by the weather data API or vice versa, the result will be discarded 
+            from the list of search results, unless the result is the first one returned from an API call.  To give an example, I was searching the geolocating API for
+                Vauxhall, United Kingdom, but when typing the provided coordinates back into the weather data API, I would receive city names of places such as Liverpool or Lambeth.  
+                The reason for this seems to be that Vauxhall is a smaller region within Liverpool and Lambeth.*/
+            }).then(function(weatherData){
 
-            //     for (var counter2 = 0; counter2 < values.length; counter2++){
+                if ((cityName.includes(weatherData.name) || weatherData.name.includes(cityName)) || counter === 0){
 
-            //         if(values[counter2].includes(citySearchBox.value) === true){
-
-            //             printedCityNames.push(values[counter2] + ", " + countryAndState);
-            //             break;
-            //         }
-            //     }
-
-            // } else if(cityName === citySearchBox.value){
-
-                /*To keep things, simple I rounded the latitude and longitude to four decimal places.  I was running into an issue where the system would round the coordinates
-                to four decimal places.  The system rounds the coordiantes to four decimal places in the output data.  I thought this would reduce issues with outputs not being uniform. */
-                roundedLatitude = data[counter].lat.toFixed(4);
-                roundedLongitude = data[counter].lon.toFixed(4);
-                var aPIString = "https://api.openweathermap.org/data/2.5/weather?lat=" +  roundedLatitude + "&lon=" + roundedLongitude + "&appid=1b2bd4f01472b8f5040a1556773b2978&units=imperial";
-                console.log(aPIString);
-
-
-                await fetch(aPIString).then(function (response){
-
+                    var printedCityName =  weatherData.name + ", " + countryAndState
+                    var printedCityNameMK2 = "";
                     
-                    if(response.status !== 200){
-            
-                        document.getElementById("error-heading").textContent = response.status + " error returned!!";
-                    
-                    } else {
-            
-                        document.getElementById("error-heading").textContent = "";
-                        return response.json()
+
+                    if(foreignCityNameWithState === true){
+
+
+                        printedCityNameMK2 = weatherData.name + ", " + foreignStateName + ", " + countryAndState
+
+                        printedCityNamesMK2.push(printedCityNameMK2);
                     }
-                /*Once again, to limit the number of edge cases and odd scenarios, I decided to  call the weather data API for each location that the geolocating API returned.  
-                If the city name given by the geolocating API doesn't contain or match the name given by the weather data API or vice versa, the result will be discarded 
-                from the list of search results.  To give an example, I was searching the geolocating API for Vauxhall, United Kingdom, but when typing the provided coordinates 
-                back into the weather data API, I would receive city names of places such as Liverpool or Lambeth.  The reason for this seems to be that Vauxhall is a smaller
-                region within Liverpool and Lambeth.  To keep things simple I wanted to display only the cities and districts that the weather API actually has data for.*/
-                }).then(function(data2){
 
-                    console.log(data2);
+                    // I included this check because one result for Upernavik, Greenland came back with no city name in the returned data.
+                    if(weatherData.name === ""){
 
-                    if (data2.name.includes(cityName) || cityName.includes(data2.name)){
+                        printedCityName = countryAndState;
+                    }
 
-                        printedCityNames.push(data2.name + ", " + countryAndState);
+                    printedCityNames.push(printedCityName);
 
-                        weatherData.push({identifer: "result-" + counter, name: data2, icon: data2.weather[0].icon, temp: data2.main.temp, humidity: data2.main.humidity, windSpeed : data2.wind.speed});
+                    //truncatedWeatherData.push({identifer: "result-" + counter, name: printedCityName, icon: weatherData.weather[0].icon, temp: weatherData.main.temp, humidity: weatherData.main.humidity, windSpeed : weatherData.wind.speed});
+                
+                    var searchResult = document.createElement("button");
+                    searchResult.id = "search-history-" + counter;
+                    searchResult.textContent = printedCityNames[counter];
+                    searchResult.classList.add("btn");
+                    searchResult.classList.add("btn-secondary");
+                    searchResult.classList.add("my-2");
+                    searchResult.classList.add("mx-4");
+                    searchResult.setAttribute("data-cityid", weatherData.id);
+                    searchResult.setAttribute("data-cityname", printedCityName);
+                    searchResult.setAttribute("data-icon", weatherData.weather[0].icon)
+                    searchResult.setAttribute("data-temp", weatherData.main.temp)
+                    searchResult.setAttribute("data-humidity", weatherData.main.humidity)
+                    searchResult.setAttribute("data-windspeed", weatherData.wind.speed)
+                    searchResult.setAttribute("data-latitude", roundedLatitude);
+                    searchResult.setAttribute("data-longitude", roundedLongitude);
+                    searchResult.setAttribute("data-timezone", weatherData.timezone);
+                    searchResult.addEventListener("click", displayCurrentWeather);
+                    searchResult.addEventListener("click", obtainAndDisplayWeatherForcast);
+                    searchResult.addEventListener("click", addQueriedCityToSearchHistory);
                     
-                        var searchResult = document.createElement("button")
-                        searchResult.id = "search-history-" + counter;
-                        searchResult.textContent = printedCityNames[counter];
-                        searchResult.classList.add("btn");
-                        searchResult.classList.add("btn-secondary");
-                        searchResult.classList.add("my-2");
-                        searchResult.classList.add("mx-4");
-                        searchResult.setAttribute("data-cityid", data2.id);
-                        searchResult.setAttribute("data-cityname", data2.name + ", " + countryAndState)
-                        searchResult.setAttribute("data-icon", data2.weather[0].icon)
-                        searchResult.setAttribute("data-temp", data2.main.temp)
-                        searchResult.setAttribute("data-humidity", data2.main.humidity)
-                        searchResult.setAttribute("data-windspeed", data2.wind.speed)
-                        searchResult.setAttribute("data-latitude", roundedLatitude);
-                        searchResult.setAttribute("data-longitude", roundedLongitude);
-                        searchResult.setAttribute("data-timezone", data2.timezone);
-                        searchResult.addEventListener("click", displayCurrentWeather);
-                        searchResult.addEventListener("click", obtainAndDisplayWeatherForcast);
-                        searchResult.addEventListener("click", addQueriedCityToSearchHistory);
-                        
-                        var searchResults = document.getElementById("search-results");
+                    var searchResults = document.getElementById("search-results");
 
-                        searchResults.insertAdjacentElement('beforeend', searchResult);
+                    searchResults.insertAdjacentElement('beforeend', searchResult);
 
-                    } else{
+                    numberOfSearchResultsOnPage++;
 
-                        printedCityNames.push(0);
-                        weatherData.push(0);
-                    } 
+                    var searchResultButtons = searchResults.querySelectorAll('button')
 
-                    
-                    
-                 });
+                    for(var counter2 = 1; counter2 < searchResultButtons.length; counter2++){
 
-            // } else {
+                        if(searchResultButtons[counter2].textContent === searchResultButtons[counter2 - 1].textContent  && foreignCityNameWithState === true){
 
-            //     printedCityNames.push(data[counter].name + ", " + countryAndState);
-            // }
+
+                            searchResultButtons[counter2].textContent = printedCityNamesMK2[counter2];
+                            searchResultButtons[counter2].setAttribute("data-cityname", printedCityNamesMK2[counter2]);
+                            searchResultButtons[counter2 - 1].textContent = printedCityNamesMK2[counter2 - 1];
+                            searchResultButtons[counter2 - 1].setAttribute("data-cityname", printedCityNamesMK2[counter2 - 1]);
+                        }
+                    }
+
+                } else{
+
+                    printedCityNames.push(0);
+                    //truncatedWeatherData.push(0);
+                } 
+            });
         }
-        // displaySearchResults(data);
+
+        if(numberOfSearchResultsOnPage > 0){
+
+            document.getElementById("search-results-heading").textContent = "Search Results";
+        
+        } else {
+
+            document.getElementById("search-results-heading").textContent = "";
+            errorHeading.textContent = "There were no results found for your search!";
+        } 
+
     });
 }
 
@@ -255,26 +276,28 @@ function checkCountrySelectBox(){
         if(countrySelectBox.value === "US"){
 
             stateSelectBox.disabled = false;
+            citySearchBox.disabled = true;
+            citySearchBox.value = "";
+            searchButton.disabled = true;
+        
 
-            if(stateSelectBox.value === ""){
+        } else if (countrySelectBox.value !== "US"){
 
-                citySearchBox.disabled = true;
-                citySearchBox.value = "";
-                searchButton.disabled = true;
-            }
-
-        } else {
-
+            stateSelectBox.disabled = true;
+            stateSelectBox.value = "";
+            citySearchBox.value = "";
             citySearchBox.disabled = false;
-        }
+            searchButton.disabled = true;
+        } 
 
     } else {
+
+        stateSelectBox.disabled = true;
         stateSelectBox.value = "";
         citySearchBox.value = "";
         citySearchBox.disabled = true;
-        stateSelectBox.disabled = true;
         searchButton.disabled = true;
-    } 
+    }
 }
 
 function checkStateSelectBox(){
@@ -310,33 +333,6 @@ function checkCitySearchBox(event){
     }, 1)
 }
 
-function displaySearchResults(data){
-
-    for(var counter = 0; counter < data.length; counter++){
-        var section = document.createElement("section");
-        section.setAttribute("id", "result-" + (counter + 1));
-
-        var resultName = document.createElement("p");
-        resultName.textContent = data[counter].name
-
-        if(data[counter].local_names !== null){
-
-            var regionFound = true;
-            rrent
-            for(var counter2 = 0; counter2 < data[counter].local_names.length; counter2++){
-
-
-                if(data[counter].local_names[counter2] !== citySearchBox.value + ", " + data[counter].name){
-
-                }
-            }
-        }
-
-        section.appendChild()
-        
-    }
-}
-
 function displayCurrentWeather(event){
 
     event.preventDefault();
@@ -347,12 +343,13 @@ function displayCurrentWeather(event){
 
     var mainWeatherIcon = document.getElementById("main-weather-icon");
 
-    document.getElementById("main-city-name").textContent = event.target.dataset.cityname;
+    document.getElementById("main-city-name").textContent = event.target.dataset.cityname + " (" + dayjs().format('MM/DD/YYYY') +")";
     mainWeatherIcon.src = "https://openweathermap.org/img/wn/" + event.target.dataset.icon + "@2x.png";
 
     mainWeatherIcon.classList.add("d-inline");
 
-    
+    document.getElementById("latitude-main").textContent = "Latitude: " + event.target.dataset.latitude + "°";
+    document.getElementById("longitude-main").textContent = "Longitude: " + event.target.dataset.longitude + "°";
     document.getElementById("temp-main").textContent = "Temperature: " + event.target.dataset.temp + " °F";
     document.getElementById("wind-main").textContent = "Wind Speed: " + event.target.dataset.windspeed + "MPH";
     document.getElementById("humidity-main").textContent = "Humidity: " + event.target.dataset.humidity + "%";
@@ -365,18 +362,7 @@ async function obtainAndDisplayWeatherForcast(event){
 
     await fetch(aPIString).then(function (response){
 
-        
-
-                    
-        if(response.status !== 200){
-
-            document.getElementById("error-heading").textContent = response.status + " error returned!!";
-        
-        } else {
-
-            document.getElementById("error-heading").textContent = "";
-            return response.json()
-        }
+        return checkforErrors(response)
 
     }).then (function(forecast){
 
@@ -386,10 +372,7 @@ async function obtainAndDisplayWeatherForcast(event){
         the target location and the timezone of the user's local machine.  We then add together the local time in hours and
         the negative of the local time UTC offset, to convert the local time to UTC time.*/
 
-        var localTimeUTCHourOffset = dayjs().utcOffset() / 60
-
-        // console.log(localTimeUTCHourOffset);
-        // console.log(targetTimeUTCHourOffset);
+        //var localTimeUTCHourOffset = dayjs().utcOffset() / 60
 
         var today = dayjs()
 
@@ -432,12 +415,9 @@ function addQueriedCityToSearchHistory(event){
 
     for(var counter2 = 0; counter2 < buttonKeys.length; counter2++){
 
-        
-    
         var currentButtonData = JSON.parse(localStorage.getItem(buttonKeys[counter2]));
 
         if(currentButtonData['data-cityId'] === event.target.dataset.cityid){
-
 
             localStorage.removeItem(buttonKeys[counter2]);
             var indexToRemove = buttonKeys.indexOf(buttonKeys[counter2]);
@@ -447,11 +427,9 @@ function addQueriedCityToSearchHistory(event){
 
                 buttonData.push(JSON.parse(localStorage.getItem(buttonKeys[counter])));
                 localStorage.removeItem(buttonKeys[counter]);
-    
             }
 
             localStorageItemCounter = 0
-
             
             for (var counter3 = 0; counter3 < buttonData.length; counter3++){
 
@@ -463,14 +441,10 @@ function addQueriedCityToSearchHistory(event){
         }
     }
 
-
-        localStorageItemCounter++;
-    
-    
+    localStorageItemCounter++;
 
     var storedButton = event.target;
     storedButton.id = "search-history-" + localStorageItemCounter;
-
 
     localStorage.setItem(storedButton.id, JSON.stringify({
         
@@ -527,7 +501,6 @@ function displaySearchHistory(){
         }
 
         document.getElementById("clear-search-history").insertAdjacentElement('beforeBegin', newButton);
-        newButton
         newButton.addEventListener("click", displayCurrentWeather);
         newButton.addEventListener("click", obtainAndDisplayWeatherForcast);
         newButton.addEventListener("click", addQueriedCityToSearchHistory);
@@ -544,7 +517,6 @@ function clearSearchHistoryButtons(){
     for (var counter = 0; counter < numberOfButtons; counter++){
 
         currentSearchHistoryButtons[0].remove();
-
     }
 }
 
@@ -585,26 +557,22 @@ function displaySearchResultsHeadingAndClearButton(){
             
             break;
         }
+    }
+}
 
+function checkforErrors(response){
+
+    if(response.status !== 200){
         
+        document.getElementById("error-heading").textContent = response.status + " error returned!!";
+        document.getElementById("search-results-heading").textContent = "";
+    
+    } else {
+
+        document.getElementById("error-heading").textContent = "";
+        return response.json()
     }
 }
 
 displaySearchHistory();
 displaySearchResultsHeadingAndClearButton();
-
-
-
-
-
-
-
-/*http://api.openweathermap.org/geo/1.0/direct?q=London,GB&limit=5&appid=461175098122abca5bd4e6f6925a0790
-
-
-
-"http://api.openweathermap.org/geo/1.0/direct?q=Columbus,OH,US&limit=5&appid=ed8e580622c5507cea04345d02c232b2"
-
-https://api.openweathermap.org/geo/1.0/direct?q=London,GB&limit=5&appid=ed8e580622c5507cea04345d02c232b2
-
-https://api.openweathermap.org/data/3.0/onecall?lat=51.50853&lon=-0.12574&appid=1b2bd4f01472b8f5040a1556773b2978*/
