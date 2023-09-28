@@ -28,7 +28,7 @@ img{
     padding-bottom: 0.5em;
     padding-top: 0.5em;
     text-align: center;
-    width: 98%;
+    width: 100%;
 }
 
 .red{
@@ -59,11 +59,6 @@ img{
 
 @media screen and (min-width: 1500px) {
 
-
-    form{
-        
-        /* margin: auto; */
-    }
 }
 
 
@@ -133,6 +128,11 @@ img{
 @media screen and (max-width: 315px){
    
     button {
+        font-size: 7vw;
+    }
+
+    select {
+        
         font-size: 7vw;
     }
 
