@@ -335,10 +335,6 @@ function displayCurrentWeather(event){
 
     event.preventDefault();
 
-    var targetString = event.target.id;
-
-    var targetButtonNumber = targetString.split("-")[2]
-
     var mainWeatherIcon = document.getElementById("main-weather-icon");
 
     document.getElementById("main-city-name").textContent = event.target.dataset.cityname + " (" + dayjs().format('MM/DD/YYYY') +")";
