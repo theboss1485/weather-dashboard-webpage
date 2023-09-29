@@ -7,6 +7,8 @@ var clearSearchHistoryButton = document.getElementById("clear-search-history")
 
 var localStorageItemCounter = null
 
+var errorFound = false;
+
 var printedCityNamesMK2 = [];
 
 stateSelectBox.disabled = true;
@@ -77,7 +79,6 @@ function populateStates(){
 populateCountries();
 populateStates();
 
-
 /* This function  calls the Open Weather Map geolocating API to determine city coordinates.  For each pair of coordinates that is returned,
 the function plugs the coordinates back into the Open Weather Map API.  Each time the user submits a query, the first result of this second operation is always kept. 
 However, for any subsequent reuslts, if the city names returned by the geolocating API and the weather API differ and one doesn't contain the other, the result will be discarded.  If the names
@@ -109,6 +110,8 @@ async function determineGeographicCoordinatesAndCityNames(event){
     var doctoredSearchBoxValue= citySearchBoxValue.replace(new RegExp("'", 'g'), '%27');
 
     doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp(" ", 'g'), '+');
+    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp("(", 'g'), '%28');
+    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp(")", 'g'), '%29');
 
     // The Xpert Learning AI Assistant told me how to get the value out of a dropdown box option.
     if(countrySelectBox.value === "US"){
@@ -120,7 +123,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
         var aPIString = 'https://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue + ',' + countrySelectBox.value + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
     }
 
-    document.getElementById("search-results-heading").textContent = "Searching..."
+    document.getElementById("search-results-heading").textContent = "Searching...";
     
     fetch(aPIString).then(function (response){
 
@@ -183,7 +186,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
                 if ((cityName.includes(weatherData.name) || weatherData.name.includes(cityName)) || counter === 0){
 
-                    var printedCityName =  weatherData.name + ", " + countryAndState
+                    var printedCityName =  weatherData.name + ", " + countryAndState;
                     var printedCityNameMK2 = "";
                     
 
@@ -246,6 +249,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
                     printedCityNames.push(0);
                 } 
+
             }).catch(function(error){
 
                 catchErrors(error);
@@ -256,7 +260,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
             document.getElementById("search-results-heading").textContent = "Search Results";
         
-        } else {
+        } else if(errorFound === false){
 
             document.getElementById("search-results-heading").textContent = "";
             errorHeading.textContent = "There were no results found for your search!";
@@ -324,14 +328,14 @@ function checkCitySearchBox(event){
     in it, fail to enable the Submit button, and then put the character in the textbox.  */
     setTimeout(function() {
 
-            if(citySearchBox.value !== ""){
+        if(citySearchBox.value !== ""){
+
+            searchButton.disabled = false;
     
-                searchButton.disabled = false;
-        
-            } else {
-                
-                searchButton.disabled = true;
-            }
+        } else {
+            
+            searchButton.disabled = true;
+        }
 
     }, 1)
 }
@@ -345,13 +349,14 @@ function displayCurrentWeather(event){
 
     document.getElementById("main-city-name").textContent = event.target.dataset.cityname + " (" + dayjs().format('MM/DD/YYYY') +")";
     mainWeatherIcon.src = "https://openweathermap.org/img/wn/" + event.target.dataset.icon + "@2x.png";
+    mainWeatherIcon.alt = "The weather icon for the current weather data.";
 
     mainWeatherIcon.classList.add("d-inline");
 
     document.getElementById("latitude-main").textContent = "Latitude: " + event.target.dataset.latitude + "°";
     document.getElementById("longitude-main").textContent = "Longitude: " + event.target.dataset.longitude + "°";
     document.getElementById("temp-main").textContent = "Temperature: " + event.target.dataset.temp + " °F";
-    document.getElementById("wind-main").textContent = "Wind Speed: " + event.target.dataset.windspeed + "MPH";
+    document.getElementById("wind-main").textContent = "Wind Speed: " + event.target.dataset.windspeed + " MPH";
     document.getElementById("humidity-main").textContent = "Humidity: " + event.target.dataset.humidity + "%";
    
 }
@@ -363,7 +368,7 @@ async function obtainAndDisplayWeatherForecast(event){
 
     await fetch(aPIString).then(function (response){
 
-        return checkForErrorCodes(response);
+        return checkForErrorCodes(response, true);
 
     }).then (function(forecast){
 
@@ -385,6 +390,7 @@ async function obtainAndDisplayWeatherForecast(event){
             to calculate which of the 40 pieces of forecast data the page should be displaying.  The intent is to display the piece of
              forecast data that is closest to the current time, for each of the future five days.*/
             dayWeatherIcon.src = "https://openweathermap.org/img/wn/" + forecast.list[(counter * 8 - 1)].weather[0].icon + "@2x.png";
+            mainWeatherIcon.alt = "The weather icon for the day " + counter + "weather forecast";
             dayWeatherIcon.classList.add("d-inline");
             document.getElementById("temp-day-" + (counter)).textContent = "Temperature: " + forecast.list[(counter * 8) - 1].main.temp + " °F";
             document.getElementById("wind-day-" + (counter)).textContent = "Wind Speed: " + forecast.list[(counter * 8) - 1].wind.speed + " MPH";
@@ -393,7 +399,7 @@ async function obtainAndDisplayWeatherForecast(event){
 
     }).catch(function(error){
 
-        catchErrors(error);
+        catchErrors(error, true);
     });
 }
 
@@ -560,24 +566,37 @@ function displaySearchResultsHeadingAndClearButton(){
 }
 
 // This is code to display an error message if one is encountered.
-function catchErrors(error){
+function catchErrors(error, forecast = false){
         
     document.getElementById("error-heading").textContent = "Error returned: " + error.message;
     document.getElementById("search-results-heading").textContent = "";
+    
+    errorFound = true;
+
+    if (forecast === true){
+
+        document.getElementById("error-heading").textContent = "Error returned: " + error.message + ", forecast data API call failed!"
+    }
 }
 
-// This code is to display the response code if one other than 200 is received.
-function checkForErrorCodes(response){
+// The purpose of this function is to display the response code if one other than 200 is received.
+function checkForErrorCodes(response, forecast = false){
     
     if(response.status !== 200){
         
         document.getElementById("error-heading").textContent = response.status + " error returned!!";
         document.getElementById("search-results-heading").textContent = "";
+        
+        errorFound = true;
+
+        if (forecast === true){
+
+            document.getElementById("error-heading").textContent = response.status + " error returned! Forecast data API call failed!"
+        }
     
     } else {
 
         document.getElementById("error-heading").textContent = "";
-        
         
     }
 
