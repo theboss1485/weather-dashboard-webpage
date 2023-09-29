@@ -258,7 +258,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
         if(numberOfSearchResultsOnPage > 0){
 
-            document.getElementById("search-results-heading").textContent = "Search Results";
+            document.getElementById("search-results-heading").textContent = "Search Results:";
         
         } else if(errorFound === false){
 
