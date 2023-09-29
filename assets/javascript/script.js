@@ -113,18 +113,18 @@ async function determineGeographicCoordinatesAndCityNames(event){
     // The Xpert Learning AI Assistant told me how to get the value out of a dropdown box option.
     if(countrySelectBox.value === "US"){
 
-        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue +',' + stateSelectBox.value + ',US' + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
+        var aPIString = 'https://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue +',' + stateSelectBox.value + ',US' + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
 
     } else {
 
-        var aPIString = 'http://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue + ',' + countrySelectBox.value + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
+        var aPIString = 'https://api.openweathermap.org/geo/1.0/direct?q=' + doctoredSearchBoxValue + ',' + countrySelectBox.value + '&limit=5&appid=1b2bd4f01472b8f5040a1556773b2978';
     }
 
     document.getElementById("search-results-heading").textContent = "Searching..."
     
     fetch(aPIString).then(function (response){
-        
-        return checkforErrors(response)
+
+        return checkForErrorCodes(response);
         
     }).then( async function(data){
 
@@ -172,7 +172,7 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
             await fetch(aPIString).then(function (response){
 
-                return checkforErrors(response);
+                return checkForErrorCodes(response);
 
             /*To try to limit the number of edge cases and odd scenarios, I decided to  call the weather data API for each location that the geolocating API returned.  
             If the city name given by the geolocating API doesn't contain or match the name given by the weather data API or vice versa, the result will be discarded 
@@ -246,6 +246,9 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
                     printedCityNames.push(0);
                 } 
+            }).catch(function(error){
+
+                catchErrors(error);
             });
         }
 
@@ -259,6 +262,9 @@ async function determineGeographicCoordinatesAndCityNames(event){
             errorHeading.textContent = "There were no results found for your search!";
         } 
 
+    }).catch(function(error){
+
+        catchErrors(error);
     });
 }
 
@@ -357,7 +363,7 @@ async function obtainAndDisplayWeatherForecast(event){
 
     await fetch(aPIString).then(function (response){
 
-        return checkforErrors(response)
+        return checkForErrorCodes(response);
 
     }).then (function(forecast){
 
@@ -385,11 +391,16 @@ async function obtainAndDisplayWeatherForecast(event){
             document.getElementById("humidity-day-" + (counter)).textContent = "Humidity: " + forecast.list[(counter * 8) - 1].main.humidity + "%";
         }
 
+    }).catch(function(error){
+
+        catchErrors(error);
     });
 }
 
 // This function adds each search result that the user clicks to the system's local storage.
 function addQueriedCityToSearchHistory(event){
+
+    localStorageItemCounter = localStorage.length;
 
     var buttonData = []
 
@@ -548,9 +559,16 @@ function displaySearchResultsHeadingAndClearButton(){
     }
 }
 
-// This function returns an error message to the user if a fetch call returns an error.
-function checkforErrors(response){
+// This is code to display an error message if one is encountered.
+function catchErrors(error){
+        
+    document.getElementById("error-heading").textContent = "Error returned: " + error.message;
+    document.getElementById("search-results-heading").textContent = "";
+}
 
+// This code is to display the response code if one other than 200 is received.
+function checkForErrorCodes(response){
+    
     if(response.status !== 200){
         
         document.getElementById("error-heading").textContent = response.status + " error returned!!";
@@ -559,8 +577,11 @@ function checkforErrors(response){
     } else {
 
         document.getElementById("error-heading").textContent = "";
-        return response.json()
+        
+        
     }
+
+    return response.json();
 }
 
 displaySearchHistory();
