@@ -110,8 +110,8 @@ async function determineGeographicCoordinatesAndCityNames(event){
     var doctoredSearchBoxValue= citySearchBoxValue.replace(new RegExp("'", 'g'), '%27');
 
     doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp(" ", 'g'), '+');
-    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp("(", 'g'), '%28');
-    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp(")", 'g'), '%29');
+    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp("\\(", 'g'), '%28');
+    doctoredSearchBoxValue = doctoredSearchBoxValue.replace(new RegExp("\\)", 'g'), '%29');
 
     // The Xpert Learning AI Assistant told me how to get the value out of a dropdown box option.
     if(countrySelectBox.value === "US"){
@@ -351,8 +351,9 @@ function displayCurrentWeather(event){
     mainWeatherIcon.src = "https://openweathermap.org/img/wn/" + event.target.dataset.icon + "@2x.png";
     mainWeatherIcon.alt = "The weather icon for the current weather data.";
 
-    mainWeatherIcon.classList.add("d-inline");
-
+    mainWeatherIcon.classList.add("d-block");
+    
+    document.getElementById("main-city-name").classList.add("mb-0");
     document.getElementById("latitude-main").textContent = "Latitude: " + event.target.dataset.latitude + "°";
     document.getElementById("longitude-main").textContent = "Longitude: " + event.target.dataset.longitude + "°";
     document.getElementById("temp-main").textContent = "Temperature: " + event.target.dataset.temp + " °F";
@@ -390,7 +391,7 @@ async function obtainAndDisplayWeatherForecast(event){
             to calculate which of the 40 pieces of forecast data the page should be displaying.  The intent is to display the piece of
              forecast data that is closest to the current time, for each of the future five days.*/
             dayWeatherIcon.src = "https://openweathermap.org/img/wn/" + forecast.list[(counter * 8 - 1)].weather[0].icon + "@2x.png";
-            mainWeatherIcon.alt = "The weather icon for the day " + counter + "weather forecast";
+            dayWeatherIcon.alt = "The weather icon for the day " + counter + "weather forecast";
             dayWeatherIcon.classList.add("d-inline");
             document.getElementById("temp-day-" + (counter)).textContent = "Temperature: " + forecast.list[(counter * 8) - 1].main.temp + " °F";
             document.getElementById("wind-day-" + (counter)).textContent = "Wind Speed: " + forecast.list[(counter * 8) - 1].wind.speed + " MPH";
