@@ -430,7 +430,7 @@ function addQueriedCityToSearchHistory(event){
 
         var currentButtonData = JSON.parse(localStorage.getItem(buttonKeys[counter2]));
 
-        if(currentButtonData['data-cityId'] === event.target.dataset.cityid){
+        if((currentButtonData['data-latitude'] === event.target.dataset.latitude) && (currentButtonData['data-longitude'] === event.target.dataset.longitude)){
 
             localStorage.removeItem(buttonKeys[counter2]);
             var indexToRemove = buttonKeys.indexOf(buttonKeys[counter2]);
