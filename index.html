@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <!-- I decided to use bootstrap for this project to make styling easier. -->
         <link
@@ -11,8 +11,8 @@
         rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
         crossorigin="anonymous"
-        />
-        <link rel="stylesheet" href="assets/css/style.css" />
+        >
+        <link rel="stylesheet" href="assets/css/style.css">
         <title>Weather Dashboard</title>
         <script src="assets/javascript/countries-and-states.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js" defer> </script>
@@ -24,42 +24,41 @@
             
             <!-- For large screen sizes, I made the form for enetering the search terms, as well as the search results and search history, into a column that
             sits on the left of the page.-->
-                <form>
-                    <section class="mx-2 d-flex flex-column width-100 justify-content-evenly"> 
-                        <label for="countries-box"><strong>Select a Country:</strong></label>
-                        <select name="countries-box" id="countries-box" ></select>
-                        <label for="states-box" class="mt-1"><strong>Select a State (U.S.):</strong></label>
-                        <select name="states-box" id="states-box"></select>
-                        <label for="city-search-box" class="mt-1"><strong>Search for a City:</strong></label>
-                        <input id="city-search-box" type="text">
-                    </section>
-                    <section id="button-container" class="d-flex flex-column justify-content-evenly">
-                        <button id="search-button" class="btn btn-primary mx-4 my-2">Search</button>
-                    </section>
-                        
-                    <!-- The application adds search results to the search-results section after it returns and validates them. -->
-                    <section id="search-results" class="d-flex flex-column">
-                        <p id="search-results-heading" class="text-center fw-bold mt-4 mb-1"></p>
-                        <p id="error-heading" class="text-center red"><strong></strong></p>
-                    </section>
-                        
-                    <!-- Similarly, the application adds a queried city to the search-history section after the user clicks on it. -->
-                    <section id="search-history" class="d-flex flex-column justify-content-evenly mt-4">
-                        <p id="search-history-heading" class="text-center d-none "><strong>Search History:</strong></p>
-                        <button id="clear-search-history" class="btn btn-primary mx-4 my-2 d-none">Clear Search History</button>
-                    </section>
-                </form>
-                <section>
-                    
+            <form>
+                <section class="mx-2 d-flex flex-column width-100 justify-content-evenly"> 
+                    <label for="countries-box"><strong>Select a Country:</strong></label>
+                    <select name="countries-box" id="countries-box" ></select>
+                    <label for="states-box" class="mt-1"><strong>Select a State (U.S.):</strong></label>
+                    <select name="states-box" id="states-box"></select>
+                    <label for="city-search-box" class="mt-1"><strong>Search for a City:</strong></label>
+                    <input id="city-search-box" type="text">
                 </section>
+                <section id="button-container" class="d-flex flex-column justify-content-evenly">
+                    <button id="search-button" class="btn btn-primary mx-4 my-2">Search</button>
+                </section>
+                    
+                <!-- The application adds search results to the search-results section after it returns and validates them. -->
+                <section id="search-results" class="d-flex flex-column">
+                    <p id="search-results-heading" class="text-center fw-bold mt-4 mb-1"></p>
+                    <p id="error-heading" class="text-center red"><strong></strong></p>
+                </section>
+                    
+                <!-- Similarly, the application adds a queried city to the search-history section after the user clicks on it. -->
+                <section id="search-history" class="d-flex flex-column justify-content-evenly mt-4">
+                    <p id="search-history-heading" class="text-center d-none "><strong>Search History:</strong></p>
+                    <button id="clear-search-history" class="btn btn-primary mx-4 my-2 d-none">Clear Search History</button>
+                </section>
+            </form>
         
             <section class="col-sm-12 col-md-11 col-lg-9 col-xl-8 col-xxl-7">
                 <section id="display-weather-and-search-results" class="col-12 border">
                     <section class="d-block align-items-center">
                         <h2 id="main-city-name" class="mx-2">City: </h2>
 
-                        <!-- I decided to put the main weather icon on its own line to keep things simpler with responsive design. -->
-                        <img id="main-weather-icon" src="">
+                        <!-- I decided to put the main weather icon on its own line to keep things simpler with responsive design. 
+                        I included a placeholder image icon for each image tag to keep things simpler, and because it is necessary for each <img> tag to have a src element.
+                        However, displaying the weather icons isn't necessary until the user clicks chooses a city to display weather data for.-->
+                        <img id="main-weather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="a placeholder current weather data icon.">
                     </section>
 
                     <!-- I included latitude and longitude here because some cities were returning multiple results,
@@ -78,35 +77,35 @@
                     
                     <section class="card card-width mx-2 my-2 dark-red-color">
                         <p id="date-day-1" class="mx-2"> Date:</p>
-                        <img id="weather-icon-day-1" class="mx-2">
+                        <img id="weather-icon-day-1" class="mx-2" src="https://openweathermap.org/img/wn/03d@2x.png" alt="A placeholder icon for the day 1 forcast">
                         <p id="temp-day-1" class="mx-2">Temp: </p>
                         <p id="wind-day-1" class="mx-2">Wind: </p>
                         <p id="humidity-day-1" class="mx-2">Humidity: </p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
                         <p id="date-day-2" class="mx-2">Date: </p>
-                        <img id="weather-icon-day-2" class="mx-2">
+                        <img id="weather-icon-day-2" class="mx-2" src="https://openweathermap.org/img/wn/03d@2x.png" alt="A placeholder icon for the day 2 forcast">
                         <p id="temp-day-2" class="mx-2">Temp: </p>
                         <p id="wind-day-2" class="mx-2">Wind: </p>
                         <p id="humidity-day-2" class="mx-2">Humidity: </p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
                         <p id="date-day-3" class="mx-2"> Date:</p>
-                        <img id="weather-icon-day-3" class="mx-2">
+                        <img id="weather-icon-day-3" class="mx-2" src="https://openweathermap.org/img/wn/03d@2x.png" alt="A placeholder icon for the day 3 forcast">
                         <p id="temp-day-3" class="mx-2">Temp: </p>
                         <p id="wind-day-3" class="mx-2">Wind: </p>
                         <p id="humidity-day-3" class="mx-2">Humidity: </p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
                         <p id="date-day-4" class="mx-2">Date:</p>
-                        <img id="weather-icon-day-4" class="mx-2">
+                        <img id="weather-icon-day-4" class="mx-2" src="https://openweathermap.org/img/wn/03d@2x.png" alt="A placeholder icon for the day 4 forcast">
                         <p id="temp-day-4" class="mx-2">Temp: </p>
                         <p id="wind-day-4" class="mx-2">Wind: </p>
                         <p id="humidity-day-4" class="mx-2">Humidity: </p>
                     </section>
                     <section class="card card-width mx-2 my-2 dark-red-color">
                         <p id="date-day-5" class="mx-2">Date: </p>
-                        <img id="weather-icon-day-5" class="mx-2">
+                        <img id="weather-icon-day-5" class="mx-2" src="https://openweathermap.org/img/wn/03d@2x.png" alt="A placeholder icon for the day 5 forcast">
                         <p id="temp-day-5" class="mx-2">Temp: </p>
                         <p id="wind-day-5" class="mx-2">Wind: </p>
                         <p id="humidity-day-5" class="mx-2">Humidity: </p>
