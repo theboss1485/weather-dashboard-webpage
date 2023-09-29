@@ -166,6 +166,15 @@ async function determineGeographicCoordinatesAndCityNames(event){
 
             var cityName = data[counter].name;
 
+            var stateName = "";
+
+            if(data[counter].country === "US"){
+
+                stateName = data[counter].state;
+            } 
+
+            var countryName = data[counter].country;
+
             /*To keep things, simple I rounded the latitude and longitude to four decimal places.  I was running into an issue where the system would round the coordinates
             to four decimal places.  The system rounds the coordiantes to four decimal places in the output data.  I thought this would reduce issues with outputs not being uniform. */
             roundedLatitude = data[counter].lat.toFixed(4);
@@ -184,7 +193,9 @@ async function determineGeographicCoordinatesAndCityNames(event){
             The reason for this seems to be that Vauxhall is a smaller region within Liverpool and Lambeth.*/
             }).then(function(weatherData){
 
-                if ((cityName.includes(weatherData.name) || weatherData.name.includes(cityName)) || counter === 0){
+                /* I added a check onto this condition to make sure the state matched, because, when searching for a city in a particular state, such as Denver, Colorado, 
+                the API was also returning results in other states, such as Denver, Indiana, even though I had put the state code in the API call.  */
+                if (((cityName.includes(weatherData.name) || weatherData.name.includes(cityName)) || counter === 0) && ((countrySelectBox.value === "US") ? (stateSelectBox.options[stateSelectBox.selectedIndex].text === stateName) : (true)) && (countrySelectBox.value ===countryName)){
 
                     var printedCityName =  weatherData.name + ", " + countryAndState;
                     var printedCityNameMK2 = "";
