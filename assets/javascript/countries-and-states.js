@@ -50,7 +50,7 @@ const countryListAllIsoData = [
 	{code: "CX", name: "Christmas Island"},
 	{code: "CC", name: "The Cocos (Keeling) Islands"},
 	{code: "CO", name: "Colombia"},
-	{code: "KM", name: "Comoros (the)"},
+	{code: "KM", name: "The Comoros"},
 	{code: "CD", name: "The Democratic Republic of Congo"},
 	{code: "CG", name: "The Congo"},
 	{code: "CK", name: "The Cook Islands"},
