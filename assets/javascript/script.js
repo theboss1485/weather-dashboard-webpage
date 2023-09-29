@@ -11,6 +11,7 @@ var errorFound = false;
 
 var printedCityNamesMK2 = [];
 
+
 stateSelectBox.disabled = true;
 citySearchBox.disabled = true;
 
@@ -424,22 +425,22 @@ function addQueriedCityToSearchHistory(event){
 
     clearSearchHistoryButtons();
 
-    var buttonKeys = Object.keys(localStorage).filter(key => key.startsWith("search-history-")).sort();
+    var buttonKeysMK2 = getSortedButtonKeys();
 
-    for(var counter2 = 0; counter2 < buttonKeys.length; counter2++){
+    for(var counter2 = 0; counter2 < buttonKeysMK2.length; counter2++){
 
-        var currentButtonData = JSON.parse(localStorage.getItem(buttonKeys[counter2]));
+        var currentButtonData = JSON.parse(localStorage.getItem(buttonKeysMK2[counter2]));
 
         if((currentButtonData['data-latitude'] === event.target.dataset.latitude) && (currentButtonData['data-longitude'] === event.target.dataset.longitude)){
 
-            localStorage.removeItem(buttonKeys[counter2]);
-            var indexToRemove = buttonKeys.indexOf(buttonKeys[counter2]);
-            buttonKeys.splice(indexToRemove, 1);
+            localStorage.removeItem(buttonKeysMK2[counter2]);
+            var indexToRemove = buttonKeysMK2.indexOf(buttonKeysMK2[counter2]);
+            buttonKeysMK2.splice(indexToRemove, 1);
 
-            for (var counter = 0; counter < buttonKeys.length; counter++){
+            for (var counter = 0; counter < buttonKeysMK2.length; counter++){
 
-                buttonData.push(JSON.parse(localStorage.getItem(buttonKeys[counter])));
-                localStorage.removeItem(buttonKeys[counter]);
+                buttonData.push(JSON.parse(localStorage.getItem(buttonKeysMK2[counter])));
+                localStorage.removeItem(buttonKeysMK2[counter]);
             }
 
             localStorageItemCounter = 0
@@ -482,11 +483,11 @@ function addQueriedCityToSearchHistory(event){
 // This function gets the search history from the system's local storage and displays it on the page.
 function displaySearchHistory(){
 
-    var buttonKeys = Object.keys(localStorage).filter(key => key.startsWith("search-history-")).sort();
+    var buttonKeysMK2 = getSortedButtonKeys();
 
-    for(var counter = buttonKeys.length - 1; counter >= 0 ; counter--){
+    for(var counter = buttonKeysMK2.length - 1; counter >= 0 ; counter--){
 
-        var buttonAttributes = JSON.parse(localStorage.getItem(buttonKeys[counter]));
+        var buttonAttributes = JSON.parse(localStorage.getItem(buttonKeysMK2[counter]));
 
         var newButton = document.createElement("button");
         newButton.id = "search-history" + counter
@@ -540,13 +541,13 @@ function clearSearchHistory(event){
 
     event.preventDefault();
 
-    var buttonKeys = Object.keys(localStorage).filter(key => key.startsWith("search-history-"));
-
-    var buttonKeyslength = buttonKeys.length
+    var buttonKeysMK2 = getSortedButtonKeys();
+    
+    var buttonKeyslength = buttonKeysMK2.length
 
     for (counter = 0; counter < buttonKeyslength; counter++){
 
-        localStorage.removeItem(buttonKeys[counter])
+        localStorage.removeItem(buttonKeysMK2[counter])
     }
 
     document.getElementById("clear-search-history").classList.add("d-none");
@@ -613,6 +614,23 @@ function checkForErrorCodes(response, forecast = false){
     }
 
     return response.json();
+}
+
+// This function returns the button keys in local storage, sorted in numerical order.
+function getSortedButtonKeys(){
+
+    var buttonKeys = Object.keys(localStorage).filter(key => key.startsWith("search-history-")).sort((a, b) => a - b);
+
+    /* The Xpert Learning Assistant basically gave me the code for this function.  
+    It sorts the button keys in numerical order */
+    buttonKeysMK2 = buttonKeys.sort((a, b) => {
+
+        var numberA = parseInt(a.match(/\d+/)[0]);
+        var numberB = parseInt(b.match(/\d+/)[0]);
+        return numberA - numberB;
+    })
+
+    return buttonKeysMK2;
 }
 
 displaySearchHistory();
